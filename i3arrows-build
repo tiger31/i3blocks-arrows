@@ -1,0 +1,51 @@
+#!/bin/zsh
+#Input value bash array-like "(val1 val2)"
+#But we cant just cast it into array, so we have to capture with perl what's inside "()" and give in bash array constructor
+array () {
+	echo $(perl -le '${ARGV[0]} =~ /$ARGV[1]/; print $1' "$1" "$2");
+}
+prefix=("e_arr" "c_arr" "i_arr");
+declare ${prefix:0:1}_raw="$edge";
+declare ${prefix:1:1}_raw="$color";
+declare ${prefix:2:1}_raw="$icon";
+
+#Iterating over each prefix to parse value if it's an array
+for p in "${prefix[@]}"
+do
+	#Calculating var names
+	raw=${p}_raw;
+	is=is_$p;
+	value=${p}_value;
+	#Check if string start from "(" and end by ")", means it's an array
+	#Write result to var with dynamic name
+	[[ ${(P)${raw}} =~ ^[(].*[)]$ ]]; declare ${is}=$?;
+	#If we have an array - parse it
+	if [[ ${(P)is} -eq 0 ]]; then
+		#I do not like eval myself, but...
+		#I've tried "declare/typeset", nothing worked
+		eval "$value=(\$(array \"\${(P)raw}\" \"\((.*)\)\"))"
+	fi
+done
+#Also test output
+cmd=("${(@s/ /)script}")
+[[ -f $cmd ]] && val=`$cmd` || val=$(eval $cmd);
+r_icon="$icon";
+r_color="$color";
+if [[ $is_e_arr -eq 0 && ( $is_c_arr -eq 0 || $is_i_arr -eq 0 ) ]]; then
+			for i in {0..$((${#e_arr_value} - 1))}
+			do
+				if [[ ( $mode != "compare" && $val == ${e_arr_value:${i}:1}) 
+					|| ( $mode == "compare" && $val -le ${e_arr_value:${i}:1} )]]; then
+					[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${i}:1};
+					[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${i}:1};
+					break;
+				else
+					next=$(($i + 1));
+					[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${next}:1};
+					[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${next}:1};
+				fi
+			done
+fi
+val_format=`printf $format $val`;
+echo "<span background='$background_next' color='$background'></span><span color='$r_color' background='$background'> $r_icon $val_format </span>";
+exit 0;
