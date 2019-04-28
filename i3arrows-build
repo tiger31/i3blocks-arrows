@@ -16,6 +16,7 @@ do
 	raw=${p}_raw;
 	is=is_$p;
 	value=${p}_value;
+	length=${p}_length;
 	#Check if string start from "(" and end by ")", means it's an array
 	#Write result to var with dynamic name
 	[[ ${(P)${raw}} =~ ^[(].*[)]$ ]]; declare ${is}=$?;
@@ -24,28 +25,42 @@ do
 		#I do not like eval myself, but...
 		#I've tried "declare/typeset", nothing worked
 		eval "$value=(\$(array \"\${(P)raw}\" \"\((.*)\)\"))"
+		declare ${length}=${#${(P)value}};
 	fi
 done
-#Also test output
-cmd=("${(@s/ /)script}")
-[[ -f $cmd ]] && val=`$cmd` || val=$(eval $cmd);
+#Evaluate alctual output
+val=$(eval $script);
+#Define first value of resulting color and icon
+#It will work if edge isn't array, or is color/icon isn't array either
+#For example if color is array but icon is not, we define icon value before checking it in cycle because it never changes
 r_icon="$icon";
 r_color="$color";
+#First of all we check that edge is array, else we already set all the vars we need further
 if [[ $is_e_arr -eq 0 && ( $is_c_arr -eq 0 || $is_i_arr -eq 0 ) ]]; then
-			for i in {0..$((${#e_arr_value} - 1))}
-			do
-				if [[ ( $mode != "compare" && $val == ${e_arr_value:${i}:1}) 
-					|| ( $mode == "compare" && $val -le ${e_arr_value:${i}:1} )]]; then
-					[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${i}:1};
-					[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${i}:1};
-					break;
-				else
-					next=$(($i + 1));
-					[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${next}:1};
-					[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${next}:1};
-				fi
-			done
+	#Cycle over each EDGE element
+	#Last one arg of color/icon means default value, if none of edge matches
+	for i in {0..$((${#e_arr_value} - 1))}
+	do
+		#Comparison works in two different modes:
+		# - Eval value is lower than edge value
+		# - Eval value match exactly edge value
+		if [[ ( $mode != "compare" && $val == ${e_arr_value:${i}:1}) 
+			|| ( $mode == "compare" && $val -le ${e_arr_value:${i}:1} )]]; then
+			[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${i}:1};
+			[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${i}:1};
+			#Break the cycle if value found
+			break;
+		else
+			#Else block will always set values to the next one in array (or last in array)
+			#This begaviour works in case, when none of value mathes, so we set last value as default
+			next=$(($i + 1));
+			[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${next}:1};
+			[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${next}:1};
+		fi
+	done
 fi
+#Formatting output value
 val_format=`printf $format $val`;
+#Finally arrow in pango markup
 echo "<span background='$background_next' color='$background'></span><span color='$r_color' background='$background'> $r_icon $val_format </span>";
 exit 0;
