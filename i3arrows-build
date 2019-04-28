@@ -46,16 +46,16 @@ if [[ $is_e_arr -eq 0 && ( $is_c_arr -eq 0 || $is_i_arr -eq 0 ) ]]; then
 		# - Eval value match exactly edge value
 		if [[ ( $mode != "compare" && $val == ${e_arr_value:${i}:1}) 
 			|| ( $mode == "compare" && $val -le ${e_arr_value:${i}:1} )]]; then
-			[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${i}:1};
-			[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${i}:1};
+			[[ ${is_i_arr} -eq 0 && ${i_arr_length} -gt $i ]] && r_icon=${i_arr_value:${i}:1};
+			[[ ${is_c_arr} -eq 0 && ${c_arr_length} -gt $i ]] && r_color=${c_arr_value:${i}:1};
 			#Break the cycle if value found
 			break;
 		else
 			#Else block will always set values to the next one in array (or last in array)
 			#This begaviour works in case, when none of value mathes, so we set last value as default
 			next=$(($i + 1));
-			[[ ${is_i_arr} -eq 0 ]] && r_icon=${i_arr_value:${next}:1};
-			[[ ${is_c_arr} -eq 0 ]] && r_color=${c_arr_value:${next}:1};
+			[[ ${is_i_arr} -eq 0 && ${i_arr_length} -gt $next ]] && r_icon=${i_arr_value:${next}:1};
+			[[ ${is_c_arr} -eq 0 && ${c_arr_length} -gt $next ]] && r_color=${c_arr_value:${next}:1};
 		fi
 	done
 fi
