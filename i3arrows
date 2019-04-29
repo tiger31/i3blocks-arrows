@@ -1,5 +1,16 @@
 #!/bin/zsh
 
+while getopts ":c:o:" opt; do
+  case $opt in
+    c) file="$OPTARG"
+    ;;
+    o) out="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
 #Function that calculates actula backgroud of block and adds param into config
 calc() {
 	#If we've found background param in this block, then we shold use previous one
@@ -17,7 +28,7 @@ calc() {
 } 
 
 #Read config from file, also skip comments
-config=$(grep "^[^#]" $1 | sed '/^background_next=.*/d; /^script=.*/d; s/^command=\(.*\)/script=\1/g');
+config=$(grep "^[^#]" $file | sed '/^background_next=.*/d; /^script=.*/d; s/^command=\(.*\)/script=\1/g');
 #Cycle over each line in config file
 #I've been thinking about using sed/awk/perl for whole parsing
 #But finally it's done in manual way
@@ -54,4 +65,6 @@ done < <(printf '%s\n' "$config")
 #Calculating background of last declared block. It's not handled in cycle
 calc;
 config=$(sed '1s/^/command=i3arrows-build\n/' <<< $config);
-echo $config;
+echo $config > $out;
+i3blocks -c "$out";
+exit 0;
