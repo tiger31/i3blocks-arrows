@@ -1,35 +1,57 @@
 #!/bin/zsh
 
+#Function that calculates actula backgroud of block and adds param into config
 calc() {
+	#If we've found background param in this block, then we shold use previous one
 	if [[ $background_found -eq 0 ]]; then
 		block_bg=$background_prev;
+	#If there was no backround param, then default will be applied
+	#Also means that $backgroud haven't been rewitten, so we should use it instead of $%_prev one
 	else
 		block_bg=$background;
 		background=$background_default;
 	fi
-	result=$(sed "/$(sed 's/\[/\\\[/; s/\]/\\\]/' <<< $block)/a background_next=$block_bg" <<< $result);	
+	#Outter sed adds background_prev param after block declaration
+	#Inner sed escapes "[]" ([block] -> \[block\])
+	config=$(sed "/$(sed 's/\[/\\\[/; s/\]/\\\]/' <<< $block)/a background_next=$block_bg" <<< $config);	
 } 
 
+#Read config from file, also skip comments
 config=$(grep "^[^#]" $1 | sed '/^background_next=.*/d; /^script=.*/d; s/^command=\(.*\)/script=\1/g');
-result=$config;
+#Cycle over each line in config file
+#I've been thinking about using sed/awk/perl for whole parsing
+#But finally it's done in manual way
 while IFS= read -r line
 do
+	#If we found block declaration
 	if [[ $line =~ '^\[.*\]$' ]]; then
+		#If it's not first declaration we found, then we should add calculated g in previous block
 		if [[ -n $block ]]; then
 			calc;
 		fi
+		#Rewriting current block we're working with
 		block=$line;
+		#Also dropping background to "not found" state
 		background_found=1;
 	fi
+	#If line starts with "background=", then we found declaration of needed param
 	if [[ $line =~ '^background=' ]]; then
+		#Pushing bg state to "found"
 		background_found=0;
+		#Remebering background of prev block, we'll need it in future
 		background_prev=$background;
+		#Capturing color of block's bg
 		background=$(perl -le '${ARGV[0]} =~ /^background=(.*)$/; print $1' "$line");
+		#Or not block's
+		#If there was no block declarations at all, then we found param as default, also store it
 		if [[ -z $block ]]; then
+			#As far as it's not background of block, dropping state
 			background_found=1;
 			background_default=$background;
 		fi
 	fi
 done < <(printf '%s\n' "$config")
-calc
-echo $result;
+#Calculating background of last declared block. It's not handled in cycle
+calc;
+config=$(sed '1s/^/command=i3arrows-build\n/' <<< $config);
+echo $config;
