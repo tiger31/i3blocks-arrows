@@ -1,0 +1,35 @@
+#!/bin/zsh
+
+calc() {
+	if [[ $background_found -eq 0 ]]; then
+		block_bg=$background_prev;
+	else
+		block_bg=$background;
+		background=$background_default;
+	fi
+	result=$(sed "/$(sed 's/\[/\\\[/; s/\]/\\\]/' <<< $block)/a background_next=$block_bg" <<< $result);	
+} 
+
+config=$(grep "^[^#]" $1 | sed '/^background_next=.*/d; /^script=.*/d; s/^command=\(.*\)/script=\1/g');
+result=$config;
+while IFS= read -r line
+do
+	if [[ $line =~ '^\[.*\]$' ]]; then
+		if [[ -n $block ]]; then
+			calc;
+		fi
+		block=$line;
+		background_found=1;
+	fi
+	if [[ $line =~ '^background=' ]]; then
+		background_found=0;
+		background_prev=$background;
+		background=$(perl -le '${ARGV[0]} =~ /^background=(.*)$/; print $1' "$line");
+		if [[ -z $block ]]; then
+			background_found=1;
+			background_default=$background;
+		fi
+	fi
+done < <(printf '%s\n' "$config")
+calc
+echo $result;
