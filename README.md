@@ -82,7 +82,7 @@ i3arrows require just one must-have parameter, defined in a global part of confi
 This parameter shows an actual color of i3bar, defined in i3 config. Without this property, i3-arrows won't work properly at all.
 
 Also clearing some mechanics: i3blocks takes output from ```command``` property, but i3arrows not.
-When generation config, i3arrows rewrites all ```command``` properties into ```script``` property and adds just one ```command``` property on top of the config
+When generating config, i3arrows rewrites all ```command``` properties into ```script``` property and adds just one ```command``` property on top of the config
 _Note:_ If you have ```scpirt``` property in your i3blcoks config, it will be removed before generating i3arrows config!
 
 Now let's take a look at new properies we have to describe our arrows:
