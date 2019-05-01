@@ -110,7 +110,7 @@ So here's properties you need:
 edge=(15 80)
 icon=(1 2 3)
 ```
-If none of values edge values mathes, it uses last one array element.
+If none of edge values mathes, it uses last one array element.
 
 Complete example, my battary config: 
 
