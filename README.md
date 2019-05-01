@@ -135,7 +135,7 @@ markup=pango
 interval=30
 ```
 
-Here we can see, that if battary-level will be over 25, then font color alway be blue. Same mechanic with icons
+Here we can see, that if battary-level will be over 25, then font color alway be white. Same mechanic with icons
 
 ### My curent i3bar look, using i3-arrows:
 
