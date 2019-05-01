@@ -53,6 +53,8 @@ cd i3blocks-arrows
 ln -s $PWD/i3* /usr/local/bin
 ```
 
+Scripts are working under zsh, not bash or sh
+
 If i won't be lazy, AUR package coming soon
 
 ## Configuratiog
@@ -90,7 +92,7 @@ Now let's take a look at new properies we have to describe our arrows:
 | Property  | Value | Description |
 | --------- |:-----:| -----------:|
 | background | ```string``` (hex-color) | Defines background of an arrow |
-| edge | ```array```  | ```edge``` is an array of "points" used to chande color/icon depends of script output. For example you can change battary icon depends of how much charge it has. Can be an array of int's or string's (explained further) |
+| edge | ```array```  | ```edge``` is an array of "points" used to change color/icon depends on script output. For example you can change battary icon depends of how much charge it has. Can be an array of int's or string's (explained further) |
 | mode | compare\|* | Defines how exactly icons/colors depends on edge. If set to "compare", output from ```script``` will be compared with ```edge``` by "<=". If set to anything but "compare", values compared strictly with "==" |
 | color | ```array(string)``` (hex-color) | Array of font colors, arrow can have |
 | icon | ```array(string)```  | Array of string/char (I prefer using font-awesome icons) arrow can have. It's like ```label``` property in i3blocks |
@@ -100,7 +102,7 @@ _Note: arrays format different from .ini format, but similar to bash one: color=
 
 ### How exactly edge works:
 
-Let's imagin you have some script that outputs random number from 1 to 100 and you want i3-arrows to set icons depends of value it returs.
+Let's imagin you have some script that outputs random number from 1 to 100 and you want i3-arrows to set icons depends on value it returs.
 For example if value <= 15 you want icon to be "1", if 15 < value <= 80, then "2", else "3".
 So here's properties you need:
 
