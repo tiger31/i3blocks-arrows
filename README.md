@@ -41,7 +41,9 @@ icon=
 interval=5
 ```
 
-Some text
+Here's what this config produces:
+
+![Bar](https://i.imgur.com/kmOl1ts.png)
 
 ## Installation
 
@@ -60,7 +62,7 @@ If you already have a config from i3blocks, you're in half way.
 
 ### i3bar
 
-i3aarows requires two argument:
+i3arows requires two argument:
 
 **_-c_**
   Path to your actual i3blocks config
@@ -135,3 +137,4 @@ Here we can see, that if battary-level will be over 25, then font color alway be
 
 ### My curent i3bar look, using i3-arrows:
 
+![Bar](https://i.imgur.com/GV3FtW3.png)
