@@ -50,7 +50,7 @@ Here's what this config produces:
 ```bash
 git clone https://github.com/tiger31/i3blocks-arrows
 cd i3blocks-arrows
-ls -s $PWD/i3* /usr/local/bin
+ln -s $PWD/i3* /usr/local/bin
 ```
 
 If i won't be lazy, AUR package coming soon
