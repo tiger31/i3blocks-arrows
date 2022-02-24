@@ -57,14 +57,14 @@ Scripts are working under zsh, not bash or sh
 
 If i won't be lazy, AUR package coming soon
 
-## Configuratiog
+## Configuration
 
 i3-arrows is a script that translates default i3blocks config into one another, needed to make it looks like arrows.
 If you already have a config from i3blocks, you're in half way.
 
 ### i3bar
 
-i3arows requires two argument:
+i3arows requires two arguments:
 
 **_-c_**
   Path to your actual i3blocks config
@@ -80,7 +80,7 @@ bar {
 
 ### blocks
 
-i3arrows require just one must-have parameter, defined in a global part of config: ```backgound```.
+i3arrows requires just one must-have parameter, defined in a global part of config: ```backgound```.
 This parameter shows an actual color of i3bar, defined in i3 config. Without this property, i3-arrows won't work properly at all.
 
 Also clearing some mechanics: i3blocks takes output from ```command``` property, but i3arrows not.
